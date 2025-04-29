@@ -94,8 +94,8 @@ export default function AudioPlayer() {
       <div id="stars2"></div>
       <div id="stars3"></div>
 
-      {/* Audio Player Container with updated margin */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[500px] w-full max-w-md mx-6 md:mx-auto my-6 md:my-8 p-4 md:p-6 bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl backdrop-blur-xl border border-purple-900/30 shadow-2xl">
+      {/* Audio Player Container with better margins */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-[500px] w-full max-w-sm sm:max-w-md mx-8 sm:mx-6 md:mx-auto my-6 md:my-8 p-6 md:p-8 bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl backdrop-blur-xl border border-purple-900/30 shadow-2xl">
 
         {/* Vinyl Section */}
         <div className="relative w-32 h-32 md:w-48 md:h-48 mb-6 flex items-center justify-center">
