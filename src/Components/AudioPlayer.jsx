@@ -17,7 +17,6 @@ export default function AudioPlayer() {
   const [rotation, setRotation] = useState(0);
   const animationRef = useRef(null);
 
-  // Metadata fetching
   useEffect(() => {
     let lastTitle = "";
     const fetchSongTitle = async () => {
@@ -40,7 +39,6 @@ export default function AudioPlayer() {
     return () => clearInterval(interval);
   }, []);
 
-  // Vinyl rotation animation
   useEffect(() => {
     let lastTimestamp = 0;
     const ROTATION_SPEED = 0.02;
@@ -61,7 +59,6 @@ export default function AudioPlayer() {
     };
   }, [isPlaying]);
 
-  // Audio time updates
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -80,7 +77,6 @@ export default function AudioPlayer() {
     };
   }, []);
 
-  // Play/pause handler
   const handlePlayPause = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -98,8 +94,8 @@ export default function AudioPlayer() {
       <div id="stars2"></div>
       <div id="stars3"></div>
 
-      {/* Audio Player Container */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[500px] w-full max-w-md mx-auto my-6 md:my-8 p-4 md:p-6 bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl backdrop-blur-xl border border-purple-900/30 shadow-2xl">
+      {/* Audio Player Container with updated margin */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-[500px] w-full max-w-md mx-6 md:mx-auto my-6 md:my-8 p-4 md:p-6 bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl backdrop-blur-xl border border-purple-900/30 shadow-2xl">
 
         {/* Vinyl Section */}
         <div className="relative w-32 h-32 md:w-48 md:h-48 mb-6 flex items-center justify-center">
