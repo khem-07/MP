@@ -99,10 +99,10 @@ export default function AudioPlayer() {
       <div id="stars3"></div>
 
       {/* Audio Player Container */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[500px] w-full max-w-md mx-auto my-8 p-6 bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl backdrop-blur-xl border border-purple-900/30 shadow-2xl">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-[500px] w-full max-w-md mx-auto my-6 md:my-8 p-4 md:p-6 bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl backdrop-blur-xl border border-purple-900/30 shadow-2xl">
 
         {/* Vinyl Section */}
-        <div className="relative w-48 h-48 mb-6 flex items-center justify-center">
+        <div className="relative w-32 h-32 md:w-48 md:h-48 mb-6 flex items-center justify-center">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-full h-full rounded-full border-4 border-purple-500 animate-pulse"></div>
           </div>
@@ -122,16 +122,16 @@ export default function AudioPlayer() {
             <img
               src="logo.png"
               alt="Logo"
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 object-contain rounded-full"
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-16 md:h-16 object-contain rounded-full"
             />
           </div>
         </div>
 
         {/* Song Info */}
-        <div className="text-white text-lg font-semibold mb-2 truncate w-full text-center">
+        <div className="text-white text-base md:text-lg font-semibold mb-2 truncate w-full text-center">
           {songTitle}
         </div>
-        <div className="text-purple-300 text-sm mb-8 text-center">{artist}</div>
+        <div className="text-purple-300 text-xs md:text-sm mb-8 text-center">{artist}</div>
 
         {/* Audio Element */}
         <audio
@@ -143,27 +143,22 @@ export default function AudioPlayer() {
         />
 
         {/* Controls */}
-        <div className="flex items-center justify-center space-x-8 mb-6">
-          {/* Previous Button */}
+        <div className="flex items-center justify-center space-x-6 md:space-x-8 mb-6">
           <button
-            className="text-white hover:text-purple-400 transition text-3xl"
+            className="text-white hover:text-purple-400 transition text-2xl md:text-3xl"
             aria-label="Previous"
           >
             <FaStepBackward />
           </button>
-
-          {/* Play/Pause Button */}
           <button
             onClick={handlePlayPause}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-6 shadow-lg hover:shadow-purple-500/50 transition-all duration-300 focus:outline-none text-3xl text-white"
+            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-5 md:p-6 shadow-lg hover:shadow-purple-500/50 transition-all duration-300 focus:outline-none text-2xl md:text-3xl text-white"
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? <FaPause /> : <FaPlay />}
           </button>
-
-          {/* Next Button */}
           <button
-            className="text-white hover:text-purple-400 transition text-3xl"
+            className="text-white hover:text-purple-400 transition text-2xl md:text-3xl"
             aria-label="Next"
           >
             <FaStepForward />
@@ -176,10 +171,10 @@ export default function AudioPlayer() {
         fill="#271d45"
         paused={!isPlaying}
         options={{
-          height: 90,
-          amplitude: 60,
+          height: 60,
+          amplitude: 40,
           speed: 0.25,
-          points: 6,
+          points: 4,
         }}
         style={{
           position: "absolute",
