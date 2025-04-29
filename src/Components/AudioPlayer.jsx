@@ -94,13 +94,21 @@ export default function AudioPlayer() {
       <div id="stars2"></div>
       <div id="stars3"></div>
 
-      {/* Audio Player Container with updated margin */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[500px] w-full max-w-md mx-6 md:mx-auto my-6 md:my-8 p-4 md:p-6 bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl backdrop-blur-xl border border-purple-900/30 shadow-2xl">
+      {/* Audio Player Container */}
+      <div className="
+        relative z-10 flex flex-col items-center justify-center
+        min-h-[320px] w-full max-w-xs mx-2 my-3 p-2
+        sm:min-h-[500px] sm:max-w-md sm:mx-6 sm:my-6 sm:p-4
+        bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl
+        backdrop-blur-xl border border-purple-900/30 shadow-2xl
+      ">
 
         {/* Vinyl Section */}
-        <div className="relative w-32 h-32 md:w-48 md:h-48 mb-6 flex items-center justify-center">
+        <div className="
+          relative w-20 h-20 sm:w-32 sm:h-32 mb-4 sm:mb-6 flex items-center justify-center
+        ">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-full h-full rounded-full border-4 border-purple-500 animate-pulse"></div>
+            <div className="w-full h-full rounded-full border-2 sm:border-4 border-purple-500 animate-pulse"></div>
           </div>
           <div
             ref={vinylRef}
@@ -118,16 +126,19 @@ export default function AudioPlayer() {
             <img
               src="logo.png"
               alt="Logo"
-              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-10 h-10 md:w-16 md:h-16 object-contain rounded-full"
+              className="
+                absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+                w-8 h-8 sm:w-16 sm:h-16 object-contain rounded-full
+              "
             />
           </div>
         </div>
 
         {/* Song Info */}
-        <div className="text-white text-base md:text-lg font-semibold mb-2 truncate w-full text-center">
+        <div className="text-white text-sm sm:text-lg font-semibold mb-1 sm:mb-2 truncate w-full text-center">
           {songTitle}
         </div>
-        <div className="text-purple-300 text-xs md:text-sm mb-8 text-center">{artist}</div>
+        <div className="text-purple-300 text-xs sm:text-sm mb-4 sm:mb-8 text-center">{artist}</div>
 
         {/* Audio Element */}
         <audio
@@ -139,22 +150,27 @@ export default function AudioPlayer() {
         />
 
         {/* Controls */}
-        <div className="flex items-center justify-center space-x-6 md:space-x-8 mb-6">
+        <div className="flex items-center justify-center space-x-4 sm:space-x-8 mb-4 sm:mb-6">
           <button
-            className="text-white hover:text-purple-400 transition text-2xl md:text-3xl"
+            className="text-white hover:text-purple-400 transition text-xl sm:text-2xl"
             aria-label="Previous"
           >
             <FaStepBackward />
           </button>
           <button
             onClick={handlePlayPause}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-5 md:p-6 shadow-lg hover:shadow-purple-500/50 transition-all duration-300 focus:outline-none text-2xl md:text-3xl text-white"
+            className="
+              bg-gradient-to-r from-purple-500 to-pink-500 rounded-full
+              p-3 sm:p-6 shadow-lg hover:shadow-purple-500/50
+              transition-all duration-300 focus:outline-none
+              text-xl sm:text-3xl text-white
+            "
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? <FaPause /> : <FaPlay />}
           </button>
           <button
-            className="text-white hover:text-purple-400 transition text-2xl md:text-3xl"
+            className="text-white hover:text-purple-400 transition text-xl sm:text-2xl"
             aria-label="Next"
           >
             <FaStepForward />
@@ -167,8 +183,8 @@ export default function AudioPlayer() {
         fill="#271d45"
         paused={!isPlaying}
         options={{
-          height: 60,
-          amplitude: 40,
+          height: 40,
+          amplitude: 20,
           speed: 0.25,
           points: 4,
         }}
