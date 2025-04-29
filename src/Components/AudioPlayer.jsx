@@ -100,11 +100,11 @@ export default function AudioPlayer() {
         w-full max-w-md mx-auto p-4
         bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl
         backdrop-blur-xl border border-purple-900/30 shadow-2xl
-        min-h-[360px] sm:min-h-[480px]
+        min-h-[420px] sm:min-h-[560px]
       ">
         {/* Vinyl Section */}
         <div className="
-          relative w-20 h-20 sm:w-32 sm:h-32 mb-4 flex items-center justify-center
+          relative w-20 h-20 sm:w-32 sm:h-32 mb-6 flex items-center justify-center
         ">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-full h-full rounded-full border-2 sm:border-4 border-purple-500 animate-pulse"></div>
@@ -134,10 +134,10 @@ export default function AudioPlayer() {
         </div>
 
         {/* Song Info */}
-        <div className="text-white text-sm sm:text-lg font-semibold mb-2 truncate w-full text-center px-2">
+        <div className="text-white text-sm sm:text-lg font-semibold mb-4 truncate w-full text-center px-2">
           {songTitle}
         </div>
-        <div className="text-purple-300 text-xs sm:text-sm mb-4 text-center px-2">{artist}</div>
+        <div className="text-purple-300 text-xs sm:text-sm mb-6 text-center px-2">{artist}</div>
 
         {/* Audio Element */}
         <audio
@@ -149,7 +149,7 @@ export default function AudioPlayer() {
         />
 
         {/* Controls */}
-        <div className="flex items-center justify-center space-x-6 mb-4 w-full max-w-xs">
+        <div className="flex items-center justify-center space-x-6 mb-6 w-full max-w-xs">
           <button
             className="text-white hover:text-purple-400 transition text-lg sm:text-xl"
             aria-label="Previous"
