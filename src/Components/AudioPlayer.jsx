@@ -88,7 +88,7 @@ export default function AudioPlayer() {
   };
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#090819] flex items-center justify-center p-2 pt-4">
+    <div className="relative min-h-screen w-full overflow-hidden bg-[#090819] flex items-center justify-center p-2">
       {/* Starry Background */}
       <div id="stars"></div>
       <div id="stars2"></div>
@@ -97,14 +97,14 @@ export default function AudioPlayer() {
       {/* Audio Player Container */}
       <div className="
         relative z-10 flex flex-col items-center justify-center
-        w-full max-w-md mx-auto p-4 pt-3
+        w-full max-w-md mx-auto p-4
         bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl
         backdrop-blur-xl border border-purple-900/30 shadow-2xl
-        min-h-[300px] sm:min-h-[400px]
+        min-h-[360px] sm:min-h-[480px]
       ">
         {/* Vinyl Section */}
         <div className="
-          relative w-20 h-20 sm:w-32 sm:h-32 mb-3 flex items-center justify-center
+          relative w-20 h-20 sm:w-32 sm:h-32 mb-4 flex items-center justify-center
         ">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-full h-full rounded-full border-2 sm:border-4 border-purple-500 animate-pulse"></div>
@@ -137,7 +137,7 @@ export default function AudioPlayer() {
         <div className="text-white text-sm sm:text-lg font-semibold mb-2 truncate w-full text-center px-2">
           {songTitle}
         </div>
-        <div className="text-purple-300 text-xs sm:text-sm mb-3 text-center px-2">{artist}</div>
+        <div className="text-purple-300 text-xs sm:text-sm mb-4 text-center px-2">{artist}</div>
 
         {/* Audio Element */}
         <audio
