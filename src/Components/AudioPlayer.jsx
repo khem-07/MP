@@ -4,41 +4,62 @@ import { FaPlay, FaPause, FaStepBackward, FaStepForward } from "react-icons/fa";
 import "../starryBackground.scss";
 
 const STREAM_URL = "https://listen.ramashamedia.com:8330/stream";
-const SONGTITLE_API = "https://listen.ramashamedia.com:8330/stats?sid=1&json=1";
+const SONGTITLE_API = "/currentsong"; // Proxy endpoint
 
 export default function AudioPlayer() {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [songTitle, setSongTitle] = useState("Loading...");
   const [artist, setArtist] = useState("Unknown Artist");
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const vinylRef = useRef(null);
   const [rotation, setRotation] = useState(0);
   const animationRef = useRef(null);
 
+  // Track current song title internally to compare with new fetches
+  const currentSongRef = useRef("");
+  // Track if song ended
+  const songEndedRef = useRef(true);
+
+  // Play/Pause handler
+  const handlePlayPause = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  // Fetch song title every 15 seconds, but only update if previous song ended
   useEffect(() => {
-    let lastTitle = "";
     const fetchSongTitle = async () => {
       try {
         const res = await fetch(SONGTITLE_API);
-        const data = await res.json();
-        const currentTitle = data?.SONGTITLE || "Unknown Title";
-        if (currentTitle !== lastTitle) {
-          lastTitle = currentTitle;
-          const [song, artistName] = currentTitle.split(" - ");
-          setSongTitle(song || currentTitle);
-          setArtist(artistName || "Unknown Artist");
+        const text = await res.text();
+        const currentTitle = text.trim();
+
+        if (currentTitle !== currentSongRef.current) {
+          // Only update if previous song ended
+          if (songEndedRef.current) {
+            currentSongRef.current = currentTitle;
+            const [song, artistName] = currentTitle.split(" - ");
+            setSongTitle(song || currentTitle);
+            setArtist(artistName || "Unknown Artist");
+            songEndedRef.current = false; // New song started
+          }
+          // else: do nothing, wait for current song to end
         }
       } catch (error) {
         console.error("Error fetching song title:", error);
       }
     };
+
     fetchSongTitle();
     const interval = setInterval(fetchSongTitle, 15000);
     return () => clearInterval(interval);
   }, []);
 
+  // Vinyl rotation animation
   useEffect(() => {
     let lastTimestamp = 0;
     const ROTATION_SPEED = 0.02;
@@ -53,39 +74,35 @@ export default function AudioPlayer() {
     };
     animationRef.current = requestAnimationFrame(animateVinyl);
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
     };
   }, [isPlaying]);
 
+  // Audio event listeners
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => setCurrentTime(audio.currentTime);
-    const updateDuration = () => setDuration(audio.duration || 0);
+    const onEnded = () => {
+      songEndedRef.current = true; // Mark song ended so next fetch can update
+      setIsPlaying(false);
+    };
 
-    audio.addEventListener("timeupdate", updateTime);
-    audio.addEventListener("loadedmetadata", updateDuration);
-    audio.addEventListener("play", () => setCurrentTime(0));
+    const onPlay = () => {
+      songEndedRef.current = false; // Song started playing
+      setIsPlaying(true);
+    };
+
+    audio.addEventListener("ended", onEnded);
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", () => setIsPlaying(false));
 
     return () => {
-      audio.removeEventListener("timeupdate", updateTime);
-      audio.removeEventListener("loadedmetadata", updateDuration);
-      audio.removeEventListener("play", () => setCurrentTime(0));
+      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", () => setIsPlaying(false));
     };
   }, []);
-
-  const handlePlayPause = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
-    setIsPlaying(!isPlaying);
-  };
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#090819] flex items-center justify-center">
@@ -98,8 +115,8 @@ export default function AudioPlayer() {
       <div className="
         relative z-10 flex flex-col items-center justify-center
         w-full max-w-xs sm:max-w-sm
-        mx-auto mt-0 mb-20 /* Top margin zero, bottom margin larger */
-        pt-4 pb-2 sm:pt-6 sm:pb-8 space-y-10, sm:space-y-10
+        mx-auto mt-0 mb-20
+        pt-4 pb-2 sm:pt-6 sm:pb-8 space-y-10 sm:space-y-10
         bg-gradient-to-b from-gray-900/70 to-purple-900/50 rounded-2xl
         backdrop-blur-xl border border-purple-900/30 shadow-2xl
         min-h-[400px] sm:min-h-[500px]
@@ -114,7 +131,6 @@ export default function AudioPlayer() {
             <div className="w-full h-full rounded-full border-4 border-purple-500 animate-pulse"></div>
           </div>
           <div
-            ref={vinylRef}
             className="absolute inset-2 rounded-full bg-gray-800 shadow-lg flex items-center justify-center"
             style={{
               transform: `rotate(${rotation}deg)`,
@@ -122,12 +138,12 @@ export default function AudioPlayer() {
             }}
           >
             <img
-              src="vinyl.png"
+              src="/vinyl.png"
               alt="Vinyl"
               className="w-full h-full object-cover rounded-full"
             />
             <img
-              src="logo.png"
+              src="/logo.png"
               alt="Logo"
               className="
                 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
@@ -139,11 +155,11 @@ export default function AudioPlayer() {
         </div>
 
         {/* Song Info */}
-        <div className="text-white text-sm sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4 truncate w-full text-center px-4">
-          {songTitle}
-        </div>
-        <div className="text-purple-300 text-xs sm:text-sm md:text-base mb-6 sm:mb-8 text-center px-4">
+        <div className="text-white text-lg sm:text-xl md:text-2xl font-bold mb-2 truncate w-full text-center px-4">
           {artist}
+        </div>
+        <div className="text-purple-300 text-xs sm:text-sm md:text-base mb-6 text-center px-4">
+          {songTitle}
         </div>
 
         {/* Audio Element */}
@@ -151,12 +167,11 @@ export default function AudioPlayer() {
           ref={audioRef}
           src={STREAM_URL}
           preload="none"
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
+          controls={false}
         />
 
         {/* Controls */}
-        <div className="flex items-center justify-center space-x-6 sm:space-x-8 md:space-x-10 mb-2 sm:mb-4 w-full max-w-xs sm:max-w-sm">
+        <div className="flex items-center justify-center space-x-6 sm:space-x-8 md:space-x-10 mb-4 w-full max-w-xs sm:max-w-sm">
           <button
             className="text-white hover:text-purple-400 transition text-xl sm:text-2xl md:text-3xl"
             aria-label="Previous"
