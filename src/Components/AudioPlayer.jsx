@@ -156,10 +156,10 @@ export default function AudioPlayer() {
 
         {/* Song Info */}
         <div className="text-white text-lg sm:text-xl md:text-2xl font-bold mb-2 truncate w-full text-center px-4">
-          {songTitle}
+          {artist}
         </div>
         <div className="text-purple-300 text-xs sm:text-sm md:text-base mb-6 text-center px-4">
-          {artist}
+          {songTitle}
         </div>
 
         {/* Audio Element */}
