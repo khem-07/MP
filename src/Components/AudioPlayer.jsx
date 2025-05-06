@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Wave from "react-wavify";
-import { FaPlay, FaPause, FaStepBackward, FaStepForward } from "react-icons/fa";
+import { FaPlay, FaPause } from "react-icons/fa";
 import "../starryBackground.scss";
 
 const STREAM_URL = "https://listen.ramashamedia.com:8330/stream";
@@ -9,57 +9,69 @@ const SONGTITLE_API = "/api/currentsong"; // Proxy endpoint
 export default function AudioPlayer() {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [songTitle, setSongTitle] = useState("Loading...");
-  const [artist, setArtist] = useState("Unknown Artist");
+  const [songTitle, setSongTitle] = useState(""); // blank initially
+  const [artist, setArtist] = useState(""); // blank initially
   const [rotation, setRotation] = useState(0);
   const animationRef = useRef(null);
 
-  // Track current song title internally to compare with new fetches
   const currentSongRef = useRef("");
-  // Track if song ended
   const songEndedRef = useRef(true);
 
-  // Play/Pause handler
+  // --- FIX: handle AbortError from play() ---
   const handlePlayPause = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play();
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          if (error.name !== "AbortError") {
+            console.error("Audio play error:", error);
+          }
+          // Ignore AbortError as it's expected when play is interrupted by pause
+        });
+      }
     }
     setIsPlaying(!isPlaying);
   };
 
-  // Fetch song title every 15 seconds, but only update if previous song ended
+  // --- FIX: use AbortController for fetch ---
   useEffect(() => {
+    const controller = new window.AbortController();
+
     const fetchSongTitle = async () => {
       try {
-        const res = await fetch(SONGTITLE_API);
+        const res = await fetch(SONGTITLE_API, { signal: controller.signal });
         const text = await res.text();
         const currentTitle = text.trim();
 
         if (currentTitle !== currentSongRef.current) {
-          // Only update if previous song ended
           if (songEndedRef.current) {
             currentSongRef.current = currentTitle;
             const [song, artistName] = currentTitle.split(" - ");
-            setSongTitle(song || currentTitle);
-            setArtist(artistName || "Unknown Artist");
-            songEndedRef.current = false; // New song started
+            setSongTitle(song || "");
+            setArtist(artistName || "");
+            songEndedRef.current = false;
           }
-          // else: do nothing, wait for current song to end
         }
       } catch (error) {
-        console.error("Error fetching song title:", error);
+        if (error.name === "AbortError") {
+          // Fetch was aborted, do nothing
+        } else {
+          console.error("Error fetching song title:", error);
+        }
       }
     };
 
     fetchSongTitle();
     const interval = setInterval(fetchSongTitle, 15000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      controller.abort(); // Cancel fetch on unmount
+    };
   }, []);
 
-  // Vinyl rotation animation
   useEffect(() => {
     let lastTimestamp = 0;
     const ROTATION_SPEED = 0.02;
@@ -78,18 +90,17 @@ export default function AudioPlayer() {
     };
   }, [isPlaying]);
 
-  // Audio event listeners
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const onEnded = () => {
-      songEndedRef.current = true; // Mark song ended so next fetch can update
+      songEndedRef.current = true;
       setIsPlaying(false);
     };
 
     const onPlay = () => {
-      songEndedRef.current = false; // Song started playing
+      songEndedRef.current = false;
       setIsPlaying(true);
     };
 
@@ -105,7 +116,10 @@ export default function AudioPlayer() {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#090819] flex items-center justify-center">
+    <div
+      className="relative min-h-screen w-full overflow-hidden bg-[#090819] flex items-center justify-center"
+      style={{ fontFamily: "'Poppins', 'Lato', Arial, sans-serif" }}
+    >
       {/* Starry Background */}
       <div id="stars"></div>
       <div id="stars2"></div>
@@ -155,12 +169,16 @@ export default function AudioPlayer() {
         </div>
 
         {/* Song Info */}
-        <div className="text-white text-lg sm:text-xl md:text-2xl font-bold mb-2 truncate w-full text-center px-4">
-          {artist}
-        </div>
-        <div className="text-purple-300 text-xs sm:text-sm md:text-base mb-6 text-center px-4">
-          {songTitle}
-        </div>
+        {artist && (
+          <div className="text-white text-lg sm:text-xl md:text-2xl font-bold mb-2 truncate w-full text-center px-4">
+            {artist}
+          </div>
+        )}
+        {songTitle && (
+          <div className="text-purple-300 text-xs sm:text-sm md:text-base mb-6 text-center px-4">
+            {songTitle}
+          </div>
+        )}
 
         {/* Audio Element */}
         <audio
@@ -171,13 +189,7 @@ export default function AudioPlayer() {
         />
 
         {/* Controls */}
-        <div className="flex items-center justify-center space-x-6 sm:space-x-8 md:space-x-10 mb-4 w-full max-w-xs sm:max-w-sm">
-          <button
-            className="text-white hover:text-purple-400 transition text-xl sm:text-2xl md:text-3xl"
-            aria-label="Previous"
-          >
-            <FaStepBackward />
-          </button>
+        <div className="flex items-center justify-center mb-4 w-full max-w-xs sm:max-w-sm">
           <button
             onClick={handlePlayPause}
             className="
@@ -185,16 +197,13 @@ export default function AudioPlayer() {
               p-4 sm:p-5 md:p-6 shadow-lg hover:shadow-purple-500/50
               transition-all duration-300 focus:outline-none
               text-2xl sm:text-3xl md:text-4xl text-white
+              flex items-center justify-center
             "
             aria-label={isPlaying ? "Pause" : "Play"}
           >
-            {isPlaying ? <FaPause /> : <FaPlay />}
-          </button>
-          <button
-            className="text-white hover:text-purple-400 transition text-xl sm:text-2xl md:text-3xl"
-            aria-label="Next"
-          >
-            <FaStepForward />
+            <span className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+              {isPlaying ? <FaPause /> : <FaPlay />}
+            </span>
           </button>
         </div>
       </div>
