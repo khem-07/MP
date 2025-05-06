@@ -1,6 +1,8 @@
 @import "tailwindcss";
 body {
-  font-family: 'Boogaloo', cursive;
+  font-family: "Della Respira", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 
