@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Wave from "react-wavify";
 import { FaPlay, FaPause } from "react-icons/fa";
 import "../starryBackground.scss";
-import './font.css';
+import "../Components/font.css";
 
 const STREAM_URL = "https://listen.ramashamedia.com:8330/stream";
 const SONGTITLE_API = "/api/currentsong"; // Proxy endpoint
